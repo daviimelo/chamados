@@ -1,5 +1,6 @@
 package projeto.chamados.controller;
 
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -23,7 +24,7 @@ public class ChamadoController {
     @PostMapping("/{usuarioId}/chamados")
     public ResponseEntity<ChamadoResponse> cadastrar(
             @PathVariable UUID usuarioId,
-            @RequestBody ChamadoRequest chamadoRequest) {
+            @Valid @RequestBody ChamadoRequest chamadoRequest) {
         ChamadoResponse chamadoCriado = chamadoService.cadastrar(usuarioId, chamadoRequest);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(chamadoCriado);

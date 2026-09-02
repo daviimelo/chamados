@@ -1,5 +1,6 @@
 package projeto.chamados.controller;
 
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -20,7 +21,7 @@ public class AdminController {
     }
 
     @PostMapping
-    public ResponseEntity<AdminResponse> salvar(@RequestBody AdminRequest adminRequest) {
+    public ResponseEntity<AdminResponse> salvar(@Valid @RequestBody AdminRequest adminRequest) {
         AdminResponse adminSalvo = adminService.salvar(adminRequest);
 
         // Status 201 Created junto com o corpo da resposta

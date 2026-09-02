@@ -1,4 +1,14 @@
 package projeto.chamados.dto;
 
-public record UsuarioRequest(String nome, String email, String senha) {
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+
+public record UsuarioRequest(
+        @NotBlank(message = "O nome é obrigatório")
+        String nome,
+        @NotBlank(message = "O e-mail é obrigatório")
+        @Email(message = "Formato de e-mail inválido")
+        String email,
+        @NotBlank(message = "A senha é obrigatória")
+        String senha ) {
 }
