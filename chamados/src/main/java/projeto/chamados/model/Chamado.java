@@ -28,13 +28,17 @@ public class Chamado {
     @Enumerated(EnumType.STRING)
     private StatusChamado status;
 
+    @Enumerated(EnumType.STRING)
+    private Categoria categoria;
+
     @ManyToOne
     @JoinColumn(name = "id_usuario")
     private Usuario usuario;
 
-    public Chamado(String titulo, String descricao, Prioridade prioridade) {
+    public Chamado(String titulo, String descricao, Prioridade prioridade, Categoria categoria) {
         this.titulo = titulo;
         this.descricao = descricao;
         this.prioridade = prioridade;
+        this.categoria = categoria;
     }
 }

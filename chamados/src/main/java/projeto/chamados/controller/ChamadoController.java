@@ -1,6 +1,8 @@
 package projeto.chamados.controller;
 
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -31,7 +33,8 @@ public class ChamadoController {
     }
 
     @GetMapping("/{usuarioId}/chamados/abertos")
-    public ResponseEntity<List<ChamadoResponse>> listaChamadosPorUsuario(@PathVariable UUID usuarioId) {
-        return ResponseEntity.ok(chamadoService.listarChamadosPorUsuarioAberto(usuarioId));
+    public ResponseEntity<Page<ChamadoResponse>> listaChamadosPorUsuario(@PathVariable UUID usuarioId, Pageable pageable) {
+        Page<ChamadoResponse> response = chamadoService.listarChamadosPorUsuarioAberto(usuarioId, pageable);
+        return ResponseEntity.ok(response);
     }
 }

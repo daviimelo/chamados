@@ -4,6 +4,8 @@ import org.springframework.stereotype.Service;
 import projeto.chamados.dao.AdminRepository;
 import projeto.chamados.dto.AdminRequest;
 import projeto.chamados.dto.AdminResponse;
+import projeto.chamados.exception.APIException;
+import projeto.chamados.exception.APIExceptionType;
 import projeto.chamados.model.Administrador;
 
 import java.util.List;
@@ -21,7 +23,7 @@ public class AdminServiceImpl implements AdminService{
     public AdminResponse salvar(AdminRequest adminRequest) {
         boolean existeAdminComEsseEmail = adminRepository.existsByEmail(adminRequest.email());
         if (existeAdminComEsseEmail) {
-            throw new RuntimeException("Já existe um administrador com esse email cadastrado!");
+            throw new APIException(APIExceptionType.CONFLICT, "Já existe um administrador com esse email cadastrado!");
         }
 
         Administrador admin = new Administrador(adminRequest.nome(), adminRequest.email(), adminRequest.senha());

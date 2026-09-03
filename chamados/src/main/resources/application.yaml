@@ -11,3 +11,7 @@ spring:
       hibernate.format_sql: true
     hibernate:
       ddl-auto: update
+  data:
+    web:
+      pageable:
+        max-page-size: 50

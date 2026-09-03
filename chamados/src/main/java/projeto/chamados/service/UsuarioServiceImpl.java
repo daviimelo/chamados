@@ -4,6 +4,8 @@ import org.springframework.stereotype.Service;
 import projeto.chamados.dao.UsuarioRepository;
 import projeto.chamados.dto.UsuarioRequest;
 import projeto.chamados.dto.UsuarioResponse;
+import projeto.chamados.exception.APIException;
+import projeto.chamados.exception.APIExceptionType;
 import projeto.chamados.model.Usuario;
 
 @Service
@@ -19,7 +21,7 @@ public class UsuarioServiceImpl implements UsuarioService {
     public UsuarioResponse salvar(UsuarioRequest usuarioRequest) {
         boolean existeUsuarioComEsseEmail = usuarioRepository.existsByEmail(usuarioRequest.email());
         if (existeUsuarioComEsseEmail) {
-            throw new RuntimeException("Já existe um usuário com esse email cadastrado!");
+            throw new APIException(APIExceptionType.CONFLICT, "Já existe um usuário com esse email cadastrado!");
         }
 
         Usuario usuario = new Usuario(usuarioRequest.nome(), usuarioRequest.email(), usuarioRequest.senha());

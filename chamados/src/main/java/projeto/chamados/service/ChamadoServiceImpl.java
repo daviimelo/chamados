@@ -1,10 +1,15 @@
 package projeto.chamados.service;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import projeto.chamados.dao.ChamadoRepository;
 import projeto.chamados.dao.UsuarioRepository;
 import projeto.chamados.dto.ChamadoRequest;
 import projeto.chamados.dto.ChamadoResponse;
+import projeto.chamados.exception.APIException;
+import projeto.chamados.exception.APIExceptionType;
 import projeto.chamados.model.Chamado;
 import projeto.chamados.model.StatusChamado;
 import projeto.chamados.model.Usuario;
@@ -25,9 +30,9 @@ public class ChamadoServiceImpl implements ChamadoService {
 
     @Override
     public ChamadoResponse cadastrar(UUID usuarioId, ChamadoRequest chamadoRequest) {
-        Usuario usuario = usuarioRepository.findById(usuarioId).orElse(null);
+        Usuario usuario = usuarioRepository.findById(usuarioId).orElseThrow(() -> new APIException(APIExceptionType.NOT_FOUND ,"Usuário não encontrado com o ID"));
 
-        Chamado chamado = new Chamado(chamadoRequest.titulo(), chamadoRequest.descricao(), chamadoRequest.prioridade());
+        Chamado chamado = new Chamado(chamadoRequest.titulo(), chamadoRequest.descricao(), chamadoRequest.prioridade(), chamadoRequest.categoria());
         chamado.setUsuario(usuario);
         chamado.setStatus(StatusChamado.ABERTO);
 
@@ -39,22 +44,23 @@ public class ChamadoServiceImpl implements ChamadoService {
                 chamadoSalvo.getDescricao(),
                 chamadoSalvo.getPrioridade(),
                 chamadoSalvo.getStatus(),
+                chamadoSalvo.getCategoria(),
                 chamadoSalvo.getUsuario().getId()
         );
     }
 
     @Override
-    public List<ChamadoResponse> listarChamadosPorUsuarioAberto(UUID id) {
-        List<Chamado> chamados = chamadoRepository.findByUsuarioIdAndStatus(id, StatusChamado.ABERTO);
+    public Page<ChamadoResponse> listarChamadosPorUsuarioAberto(UUID id, Pageable pageable) {
 
-        return chamados
-                .stream()
+        Page<Chamado> paginaChamados = chamadoRepository.findByUsuarioIdAndStatus(id, StatusChamado.ABERTO, pageable);
+
+        return paginaChamados
                 .map(chamado -> new ChamadoResponse(chamado.getId(),
                         chamado.getTitulo(),
                         chamado.getDescricao(),
                         chamado.getPrioridade(),
                         chamado.getStatus(),
-                        chamado.getUsuario().getId()))
-                .toList();
+                        chamado.getCategoria(),
+                        chamado.getUsuario().getId()));
     }
 }
