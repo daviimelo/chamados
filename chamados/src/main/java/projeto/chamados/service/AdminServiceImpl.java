@@ -1,5 +1,6 @@
 package projeto.chamados.service;
 
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import projeto.chamados.dao.AdminRepository;
 import projeto.chamados.dto.AdminRequest;
@@ -14,9 +15,11 @@ import java.util.List;
 public class AdminServiceImpl implements AdminService{
 
     private final AdminRepository adminRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    public AdminServiceImpl(AdminRepository adminRepository) {
+    public AdminServiceImpl(AdminRepository adminRepository, PasswordEncoder passwordEncoder) {
         this.adminRepository = adminRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
@@ -26,7 +29,7 @@ public class AdminServiceImpl implements AdminService{
             throw new APIException(APIExceptionType.CONFLICT, "Já existe um administrador com esse email cadastrado!");
         }
 
-        Administrador admin = new Administrador(adminRequest.nome(), adminRequest.email(), adminRequest.senha());
+        Administrador admin = new Administrador(adminRequest.nome(), adminRequest.email(), passwordEncoder.encode(adminRequest.senha()));
         Administrador adminSalvo = adminRepository.save(admin);
         return new AdminResponse(adminSalvo.getId(), adminSalvo.getNome(), adminSalvo.getEmail());
     }
