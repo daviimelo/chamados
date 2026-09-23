@@ -4,8 +4,8 @@ import org.springframework.stereotype.Service;
 import projeto.chamados.dao.UsuarioRepository;
 import projeto.chamados.dto.UsuarioRequest;
 import projeto.chamados.dto.UsuarioResponse;
-import projeto.chamados.exception.APIException;
-import projeto.chamados.exception.APIExceptionType;
+import projeto.chamados.core.exception.APIException;
+import projeto.chamados.core.exception.APIExceptionType;
 import projeto.chamados.model.Usuario;
 
 @Service

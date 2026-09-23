@@ -5,8 +5,8 @@ import org.springframework.stereotype.Service;
 import projeto.chamados.dao.AdminRepository;
 import projeto.chamados.dto.AdminRequest;
 import projeto.chamados.dto.AdminResponse;
-import projeto.chamados.exception.APIException;
-import projeto.chamados.exception.APIExceptionType;
+import projeto.chamados.core.exception.APIException;
+import projeto.chamados.core.exception.APIExceptionType;
 import projeto.chamados.model.Administrador;
 
 import java.util.List;

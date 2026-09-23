@@ -1,4 +1,4 @@
-package projeto.chamados.exception;
+package projeto.chamados.core.exception;
 
 import lombok.Data;
 

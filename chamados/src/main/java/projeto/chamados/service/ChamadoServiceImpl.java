@@ -1,20 +1,18 @@
 package projeto.chamados.service;
 
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import projeto.chamados.dao.ChamadoRepository;
 import projeto.chamados.dao.UsuarioRepository;
 import projeto.chamados.dto.ChamadoRequest;
 import projeto.chamados.dto.ChamadoResponse;
-import projeto.chamados.exception.APIException;
-import projeto.chamados.exception.APIExceptionType;
+import projeto.chamados.core.exception.APIException;
+import projeto.chamados.core.exception.APIExceptionType;
 import projeto.chamados.model.Chamado;
 import projeto.chamados.model.StatusChamado;
 import projeto.chamados.model.Usuario;
 
-import java.util.List;
 import java.util.UUID;
 
 @Service

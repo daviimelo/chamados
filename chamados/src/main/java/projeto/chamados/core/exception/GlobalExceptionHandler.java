@@ -1,6 +1,5 @@
-package projeto.chamados.exception;
+package projeto.chamados.core.exception;
 
-import lombok.NonNull;
 import org.jspecify.annotations.Nullable;
 import org.springframework.http.*;
 import org.springframework.web.bind.MethodArgumentNotValidException;
