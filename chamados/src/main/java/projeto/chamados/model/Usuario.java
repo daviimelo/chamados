@@ -1,9 +1,6 @@
 package projeto.chamados.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -14,7 +11,7 @@ import java.util.UUID;
 @Entity
 @Getter
 @Setter
-@ToString
+@ToString(exclude = "senha")
 @NoArgsConstructor
 public class Usuario {
     @Id
@@ -24,9 +21,14 @@ public class Usuario {
     private String email;
     private String senha;
 
-    public Usuario(String nome, String email, String senha) {
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Papel papel;
+
+    public Usuario(String nome, String email, String senha, Papel papel) {
         this.nome = nome;
         this.email = email;
         this.senha = senha;
+        this.papel = papel;
     }
 }

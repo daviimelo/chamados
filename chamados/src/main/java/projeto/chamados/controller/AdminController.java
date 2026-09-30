@@ -4,9 +4,10 @@ import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import projeto.chamados.dto.AdminRequest;
-import projeto.chamados.dto.AdminResponse;
-import projeto.chamados.service.AdminService;
+import projeto.chamados.dto.UsuarioRequest;
+import projeto.chamados.dto.UsuarioResponse;
+import projeto.chamados.model.Papel;
+import projeto.chamados.service.UsuarioService;
 
 import java.util.List;
 
@@ -14,23 +15,20 @@ import java.util.List;
 @RequestMapping("/admins")
 public class AdminController {
 
-    private final AdminService adminService;
+    private final UsuarioService usuarioService;
 
-    public AdminController(AdminService adminService) {
-        this.adminService = adminService;
+    public AdminController(UsuarioService usuarioService) {
+        this.usuarioService = usuarioService;
     }
 
     @PostMapping
-    public ResponseEntity<AdminResponse> salvar(@Valid @RequestBody AdminRequest adminRequest) {
-        AdminResponse adminSalvo = adminService.salvar(adminRequest);
-
-        // Status 201 Created junto com o corpo da resposta
-        return ResponseEntity.status(HttpStatus.CREATED).body(adminSalvo);
+    @ResponseStatus(HttpStatus.CREATED)
+    public UsuarioResponse salvarAdmin(@Valid @RequestBody UsuarioRequest request) {
+        return usuarioService.salvarAdmin(request);
     }
 
-    @GetMapping
-    public ResponseEntity<List<AdminResponse>> listarAdmins() {
-        // Status 200 OK junto com a lista
-        return ResponseEntity.ok(adminService.listarAdmins());
+    @GetMapping("/usuarios")
+    public List<UsuarioResponse> listar(@RequestParam(required = false) Papel papel) {
+        return usuarioService.listar(papel);
     }
 }

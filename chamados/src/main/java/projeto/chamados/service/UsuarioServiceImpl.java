@@ -1,31 +1,62 @@
 package projeto.chamados.service;
 
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import projeto.chamados.dao.UsuarioRepository;
 import projeto.chamados.dto.UsuarioRequest;
 import projeto.chamados.dto.UsuarioResponse;
 import projeto.chamados.core.exception.APIException;
 import projeto.chamados.core.exception.APIExceptionType;
+import projeto.chamados.model.Papel;
 import projeto.chamados.model.Usuario;
+
+import java.util.List;
 
 @Service
 public class UsuarioServiceImpl implements UsuarioService {
 
     private final UsuarioRepository usuarioRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    public UsuarioServiceImpl(UsuarioRepository usuarioRepository) {
+    public UsuarioServiceImpl(UsuarioRepository usuarioRepository, PasswordEncoder passwordEncoder) {
         this.usuarioRepository = usuarioRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
-    public UsuarioResponse salvar(UsuarioRequest usuarioRequest) {
-        boolean existeUsuarioComEsseEmail = usuarioRepository.existsByEmail(usuarioRequest.email());
-        if (existeUsuarioComEsseEmail) {
+    public UsuarioResponse salvar(UsuarioRequest request) {
+        return criar(request, Papel.USUARIO);
+    }
+
+    @Override
+    public UsuarioResponse salvarAdmin(UsuarioRequest request) {
+        return criar(request, Papel.ADMINISTRADOR);
+    }
+
+    @Override
+    public List<UsuarioResponse> listar(Papel papel) {
+        List<Usuario> usuarios = (papel == null)
+                ? usuarioRepository.findAll()
+                : usuarioRepository.findByPapel(papel);
+
+        return usuarios.stream().map(this::toResponse).toList();
+    }
+
+    private UsuarioResponse criar(UsuarioRequest request, Papel papel) {
+        if (usuarioRepository.existsByEmail(request.email())) {
             throw new APIException(APIExceptionType.CONFLICT, "Já existe um usuário com esse email cadastrado!");
         }
 
-        Usuario usuario = new Usuario(usuarioRequest.nome(), usuarioRequest.email(), usuarioRequest.senha());
-        Usuario usuarioCriado = usuarioRepository.save(usuario);
-        return new UsuarioResponse(usuarioCriado.getId(), usuarioCriado.getNome(), usuarioCriado.getEmail());
+        Usuario usuario = new Usuario(
+                request.nome(),
+                request.email(),
+                passwordEncoder.encode(request.senha()),
+                papel
+        );
+        return toResponse(usuarioRepository.save(usuario));
+    }
+
+    private UsuarioResponse toResponse(Usuario u) {
+        return new UsuarioResponse(u.getId(), u.getNome(), u.getEmail(), u.getPapel());
     }
 }

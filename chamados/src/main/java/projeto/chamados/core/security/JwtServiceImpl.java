@@ -2,12 +2,17 @@ package projeto.chamados.core.security;
 
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Service;
+import projeto.chamados.dto.UsuarioLogadoDto;
 
 import javax.crypto.SecretKey;
 import java.util.Date;
+import java.util.List;
+import java.util.UUID;
 
 @Service
 public class JwtServiceImpl implements JwtService {
@@ -33,6 +38,22 @@ public class JwtServiceImpl implements JwtService {
 
     @Override
     public Authentication getAuthentication(String token) {
-        return null;
+        var claims = Jwts
+                .parser()
+                .verifyWith(secretKey)
+                .build()
+                .parseSignedClaims(token)
+                .getPayload();
+
+        var userId = claims.getSubject();
+        List<String> authorities = claims.get("authorities", List.class);
+
+        var grantedAuthorities = authorities
+                .stream()
+                .map(SimpleGrantedAuthority::new)
+                .toList();
+
+        var usuarioLogado = new UsuarioLogadoDto(UUID.fromString(userId));
+        return new UsernamePasswordAuthenticationToken(usuarioLogado, token, grantedAuthorities);
     }
 }

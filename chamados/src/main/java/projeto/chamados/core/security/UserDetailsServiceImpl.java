@@ -1,14 +1,15 @@
 package projeto.chamados.core.security;
 
 import lombok.AllArgsConstructor;
+import lombok.NonNull;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-import projeto.chamados.dao.AdminRepository;
-import projeto.chamados.model.Administrador;
+import projeto.chamados.dao.UsuarioRepository;
+import projeto.chamados.model.Usuario;
 
 import java.util.List;
 
@@ -16,17 +17,17 @@ import java.util.List;
 @AllArgsConstructor
 public class UserDetailsServiceImpl implements UserDetailsService {
 
-    private final AdminRepository adminRepository;
+    private final UsuarioRepository usuarioRepository;
 
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Administrador admin =
-                adminRepository.findByEmail(username)
+    public UserDetails loadUserByUsername(@NonNull String username) throws UsernameNotFoundException {
+        Usuario usuario =
+                usuarioRepository.findByEmail(username)
                 .orElseThrow(() -> new UsernameNotFoundException(username));
 
-        return User.withUsername(admin.getEmail())
-                .password(admin.getSenha())
-                .authorities(List.of(new SimpleGrantedAuthority("ROLE_ADMIN")))
+        return User.withUsername(usuario.getId().toString())
+                .password(usuario.getSenha())
+                .roles(usuario.getPapel().name())
                 .build();
     }
 }
