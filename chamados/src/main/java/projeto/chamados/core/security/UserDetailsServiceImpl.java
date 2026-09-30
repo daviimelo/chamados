@@ -2,7 +2,6 @@ package projeto.chamados.core.security;
 
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -11,7 +10,7 @@ import org.springframework.stereotype.Service;
 import projeto.chamados.dao.UsuarioRepository;
 import projeto.chamados.model.Usuario;
 
-import java.util.List;
+import java.util.Locale;
 
 @Service
 @AllArgsConstructor
@@ -21,8 +20,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(@NonNull String username) throws UsernameNotFoundException {
-        Usuario usuario =
-                usuarioRepository.findByEmail(username)
+        Usuario usuario = usuarioRepository.findByEmail(username.trim().toLowerCase(Locale.ROOT))
                 .orElseThrow(() -> new UsernameNotFoundException(username));
 
         return User.withUsername(usuario.getId().toString())

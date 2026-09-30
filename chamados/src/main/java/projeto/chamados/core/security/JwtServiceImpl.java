@@ -18,7 +18,7 @@ import java.util.UUID;
 public class JwtServiceImpl implements JwtService {
     private final SecretKey secretKey =
             Keys.hmacShaKeyFor(
-                    "minha-chave-ultra-secreta-de-pelo-menos-256-bits!".getBytes()
+                    "minha-chave-ultra-secreta-de-pelo-menos-256-bits".getBytes()
             );
 
     @Override
@@ -27,9 +27,9 @@ public class JwtServiceImpl implements JwtService {
                 .subject(authentication.getName())
                 .claim("authorities",
                         authentication.getAuthorities()
-                        .stream()
-                        .map(GrantedAuthority::getAuthority)
-                        .toList()
+                                .stream()
+                                .map(GrantedAuthority::getAuthority)
+                                .toList()
                 )
                 .signWith(secretKey)
                 .expiration(new Date(System.currentTimeMillis() + 3600 * 1000))

@@ -2,7 +2,6 @@ package projeto.chamados.controller;
 
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import projeto.chamados.dto.UsuarioRequest;
 import projeto.chamados.dto.UsuarioResponse;
@@ -27,8 +26,8 @@ public class AdminController {
         return usuarioService.salvarAdmin(request);
     }
 
-    @GetMapping("/usuarios")
-    public List<UsuarioResponse> listar(@RequestParam(required = false) Papel papel) {
-        return usuarioService.listar(papel);
+    @GetMapping
+    public List<UsuarioResponse> listar() {
+        return usuarioService.listar(Papel.ADMINISTRADOR);
     }
 }

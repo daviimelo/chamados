@@ -17,8 +17,14 @@ public class Usuario {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
+
+    @Column(nullable = false)
     private String nome;
+
+    @Column(nullable = false, unique = true)
     private String email;
+
+    @Column(nullable = false)
     private String senha;
 
     @Enumerated(EnumType.STRING)

@@ -1,4 +1,4 @@
-FROM eclipse-temurin:25-jdk-jammy
+FROM eclipse-temurin:21-jdk-jammy
 
 WORKDIR /workspace
 
@@ -9,7 +9,5 @@ COPY build.gradle.kts .
 
 RUN chmod +x gradlew
 RUN ./gradlew dependencies
-
-COPY src src
 
 CMD ["./gradlew", "bootRun"]

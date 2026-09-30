@@ -1,16 +1,18 @@
 package projeto.chamados.service;
 
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import projeto.chamados.core.exception.APIException;
+import projeto.chamados.core.exception.APIExceptionType;
 import projeto.chamados.dao.UsuarioRepository;
 import projeto.chamados.dto.UsuarioRequest;
 import projeto.chamados.dto.UsuarioResponse;
-import projeto.chamados.core.exception.APIException;
-import projeto.chamados.core.exception.APIExceptionType;
 import projeto.chamados.model.Papel;
 import projeto.chamados.model.Usuario;
 
 import java.util.List;
+import java.util.Locale;
 
 @Service
 public class UsuarioServiceImpl implements UsuarioService {
@@ -43,17 +45,24 @@ public class UsuarioServiceImpl implements UsuarioService {
     }
 
     private UsuarioResponse criar(UsuarioRequest request, Papel papel) {
-        if (usuarioRepository.existsByEmail(request.email())) {
+        String email = request.email().trim().toLowerCase(Locale.ROOT);
+
+        if (usuarioRepository.existsByEmail(email)) {
             throw new APIException(APIExceptionType.CONFLICT, "Já existe um usuário com esse email cadastrado!");
         }
 
         Usuario usuario = new Usuario(
-                request.nome(),
-                request.email(),
+                request.nome().trim(),
+                email,
                 passwordEncoder.encode(request.senha()),
                 papel
         );
-        return toResponse(usuarioRepository.save(usuario));
+
+        try {
+            return toResponse(usuarioRepository.saveAndFlush(usuario));
+        } catch (DataIntegrityViolationException e) {
+            throw new APIException(APIExceptionType.CONFLICT, "Já existe um usuário com esse email cadastrado!");
+        }
     }
 
     private UsuarioResponse toResponse(Usuario u) {
