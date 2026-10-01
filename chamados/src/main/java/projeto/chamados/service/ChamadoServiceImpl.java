@@ -9,6 +9,7 @@ import projeto.chamados.dto.ChamadoRequest;
 import projeto.chamados.dto.ChamadoResponse;
 import projeto.chamados.core.exception.APIException;
 import projeto.chamados.core.exception.APIExceptionType;
+import projeto.chamados.model.Categoria;
 import projeto.chamados.model.Chamado;
 import projeto.chamados.model.StatusChamado;
 import projeto.chamados.model.Usuario;
@@ -34,31 +35,47 @@ public class ChamadoServiceImpl implements ChamadoService {
         chamado.setUsuario(usuario);
         chamado.setStatus(StatusChamado.ABERTO);
 
-        Chamado chamadoSalvo = chamadoRepository.save(chamado);
-
-        return new ChamadoResponse(
-                chamadoSalvo.getId(),
-                chamadoSalvo.getTitulo(),
-                chamadoSalvo.getDescricao(),
-                chamadoSalvo.getPrioridade(),
-                chamadoSalvo.getStatus(),
-                chamadoSalvo.getCategoria(),
-                chamadoSalvo.getUsuario().getId()
-        );
+        return toResponse(chamadoRepository.save(chamado));
     }
 
     @Override
     public Page<ChamadoResponse> listarChamadosPorUsuarioAberto(UUID id, Pageable pageable) {
+        return chamadoRepository.findByUsuarioIdAndStatus(id, StatusChamado.ABERTO, pageable)
+                .map(this::toResponse);
+    }
 
-        Page<Chamado> paginaChamados = chamadoRepository.findByUsuarioIdAndStatus(id, StatusChamado.ABERTO, pageable);
+    @Override
+    public Page<ChamadoResponse> listarMeusChamados(UUID id, StatusChamado status, String busca, Pageable pageable) {
+        return chamadoRepository.buscarMeusChamados(id, status, busca, pageable)
+                .map(this::toResponse);
+    }
 
-        return paginaChamados
-                .map(chamado -> new ChamadoResponse(chamado.getId(),
-                        chamado.getTitulo(),
-                        chamado.getDescricao(),
-                        chamado.getPrioridade(),
-                        chamado.getStatus(),
-                        chamado.getCategoria(),
-                        chamado.getUsuario().getId()));
+    @Override
+    public ChamadoResponse buscarPorId(UUID chamadoId, UUID usuarioAutenticadoId, boolean isAdmin) {
+        Chamado chamado = chamadoRepository.findById(chamadoId)
+                .orElseThrow(() -> new APIException(APIExceptionType.NOT_FOUND, "Chamado não encontrado com o ID: " + chamadoId));
+
+        if (!isAdmin && !chamado.getUsuario().getId().equals(usuarioAutenticadoId)) {
+            throw new APIException(APIExceptionType.FORBIDDEN, "Você não tem permissão para acessar este chamado.");
+        }
+
+        return toResponse(chamado);
+    }
+
+    @Override
+    public Page<ChamadoResponse> listarTodosAdmin(StatusChamado status, Categoria categoria, Pageable pageable) {
+        return chamadoRepository.buscarChamadosAdmin(status, categoria, pageable).map(this::toResponse);
+    }
+
+    public ChamadoResponse toResponse(Chamado chamado) {
+        return new ChamadoResponse(
+                chamado.getId(),
+                chamado.getTitulo(),
+                chamado.getDescricao(),
+                chamado.getPrioridade(),
+                chamado.getStatus(),
+                chamado.getCategoria(),
+                chamado.getUsuario().getId()
+        );
     }
 }

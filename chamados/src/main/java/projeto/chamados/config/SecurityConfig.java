@@ -46,6 +46,7 @@ public class SecurityConfig {
                 .exceptionHandling(ex -> ex.authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/v1/auth/**").permitAll()
+                        .requestMatchers("/chamados/admin").hasRole("ADMINISTRADOR")
                         .requestMatchers("/admins/**").access((authentication, context) -> {
                             boolean semAdmin = !usuarioRepository.existsByPapel(Papel.ADMINISTRADOR);
                             boolean admin = authentication.get().getAuthorities().stream()
